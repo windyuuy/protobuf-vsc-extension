@@ -42,7 +42,6 @@ import {
 import {
   isPascalCase,
   isSnakeCase,
-  isScreamingSnakeCase
 } from './diagnostics/index';
 
 const TEXT_FORMAT_EXTENSIONS = [
@@ -83,9 +82,9 @@ export class DiagnosticsProvider {
   /**
    * Check if the current file is proto3 syntax
    */
-  private isProto3(): boolean {
-    return this.currentFile?.syntax?.version === 'proto3';
-  }
+  // private isProto3(): boolean {
+  //   return this.currentFile?.syntax?.version === 'proto3';
+  // }
 
   validate(uri: string, file: ProtoFile, documentText?: string): Diagnostic[] {
     // Skip validation for external dependency files (e.g., .buf-deps, vendor directories)
@@ -956,18 +955,18 @@ export class DiagnosticsProvider {
 
     // Check enum values
     const valueNumbers = new Map<number, string[]>();
-    let hasZeroValue = false;
+    // let hasZeroValue = false;
 
     for (const value of enumDef.values) {
       // Check naming convention (SCREAMING_SNAKE_CASE)
-      if (this.settings.namingConventions && !isScreamingSnakeCase(value.name)) {
-        diagnostics.push({
-          severity: DiagnosticSeverity.Warning,
-          range: this.toRange(value.nameRange),
-          message: `Enum value '${value.name}' should be SCREAMING_SNAKE_CASE`,
-          source: DIAGNOSTIC_SOURCE
-        });
-      }
+      // if (this.settings.namingConventions && !isScreamingSnakeCase(value.name)) {
+      //   diagnostics.push({
+      //     severity: DiagnosticSeverity.Warning,
+      //     range: this.toRange(value.nameRange),
+      //     message: `Enum value '${value.name}' should be SCREAMING_SNAKE_CASE`,
+      //     source: DIAGNOSTIC_SOURCE
+      //   });
+      // }
 
       // Collect for duplicate checking
       if (!valueNumbers.has(value.number)) {
@@ -975,20 +974,20 @@ export class DiagnosticsProvider {
       }
       valueNumbers.get(value.number)!.push(value.name);
 
-      if (value.number === 0) {
-        hasZeroValue = true;
-      }
+      // if (value.number === 0) {
+        // hasZeroValue = true;
+      // }
     }
 
     // Check for first value being 0 (required for proto3 only)
-    if (this.settings.discouragedConstructs && this.isProto3() && !hasZeroValue && enumDef.values.length > 0) {
-      diagnostics.push({
-        severity: DiagnosticSeverity.Warning,
-        range: this.toRange(enumDef.values[0]!.range),
-        message: `First enum value should be 0 in proto3`,
-        source: DIAGNOSTIC_SOURCE
-      });
-    }
+    // if (this.settings.discouragedConstructs && this.isProto3() && !hasZeroValue && enumDef.values.length > 0) {
+    //   diagnostics.push({
+    //     severity: DiagnosticSeverity.Warning,
+    //     range: this.toRange(enumDef.values[0]!.range),
+    //     message: `First enum value should be 0 in proto3`,
+    //     source: DIAGNOSTIC_SOURCE
+    //   });
+    // }
 
     // Check for duplicate values (allowed with allow_alias option)
     const hasAllowAlias = enumDef.options.some(o => o.name === 'allow_alias' && o.value === true);
